@@ -15,7 +15,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def play(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("Wordle", callback_data="play_wordle")],
-        [InlineKeyboardButton("WordChain", callback_data="play_wordchain")]
+        [InlineKeyboardButton("WordChain", callback_data="play_wordchain")],
+        [InlineKeyboardButton("Hangman", callback_data="play_hangman")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Choose a game to play:", reply_markup=reply_markup)
@@ -30,11 +31,19 @@ async def game_choice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif query.data == "play_wordchain":
         await query.message.reply_text("Type /stop to end your current game.")
         await gamebot.start_game("WordChain", update, context)
+    elif query.data == "play_hangman":
+        await query.message.reply_text("Type /stop to end your current game.")
+        await gamebot.start_game("Hangman", update, context)
     
     await query.answer()
 
 async def guess(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    gamebot = GameBot()
+    gamebot = context.user_data.get("current_game")
+    
+    if not gamebot:
+        await update.message.reply_text("No active game! Start a new game with /play.")
+        return
+    
     await gamebot.handle_guess(update, context)
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):

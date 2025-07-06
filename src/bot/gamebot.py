@@ -4,17 +4,20 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from src.game.wordle import WordleGame
 from src.game.wordchain import WordChainGame
+from src.game.hangman import HangmanGame
 
 class GameBot:
     def __init__(self):
         self.games = {
             "Wordle": WordleGame(),
-            "WordChain": None
+            "WordChain": None,
+            "Hangman": None
         }
         self.current_game = None
         self.words = self.load_words("english-words.txt")
+        self.common_words = self.load_words("common-words.txt")
 
-    def load_words(self, filename="english-words.txt"):
+    def load_words(self, filename):
         with open(filename, "r") as file:
             return {line.strip().lower() for line in file.readlines()}
 
@@ -27,6 +30,12 @@ class GameBot:
                 self.games["WordChain"] = WordChainGame(self.words)
 
             self.current_game = self.games["WordChain"]
+            await self.current_game.start_game(update, context)
+        elif game_name == "Hangman":
+            if self.games["Hangman"] is None:
+                self.games["Hangman"] = HangmanGame(list(self.common_words))
+
+            self.current_game = self.games["Hangman"]
             await self.current_game.start_game(update, context)
         else:
             reply_text = f"Sorry, the game {game_name} is not available."
@@ -49,6 +58,8 @@ class GameBot:
         if isinstance(game, WordleGame):
             response = game.handle_guess(update, context)
         elif isinstance(game, WordChainGame):
+            response = game.handle_guess(update, context)
+        elif isinstance(game, HangmanGame):
             response = game.handle_guess(update, context)
         else:
             response = "Unknown game type. Please start a new game."
