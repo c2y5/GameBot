@@ -97,7 +97,7 @@ class MathGame:
                 result = int(result)
             
             if result == self.goal:
-                return True, f"✅ Correct! The solution was: {self.computer_solution} = {self.goal}"
+                return True, f"✅ Correct! The computer's solution was: {self.computer_solution} = {self.goal}"
             else:
                 return False, f"❌ Incorrect. Your solution equals {result}, but the target is {self.goal}."
         except ZeroDivisionError:
