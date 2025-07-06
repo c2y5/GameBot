@@ -28,24 +28,30 @@ class WordleGame(Game):
         else:
             await update.message.reply_text("New Wordle game started! Guess a 5-letter word:")
 
-    def handle_guess(self, update, context):
+    async def handle_guess(self, update, context):
         guessed_word = update.message.text.strip().lower()
 
         if len(guessed_word) != 5:
-            return "Your guess must be a 5-letter word."
+            await update.message.reply_text("Your guess must be a 5-letter word.")
+            return
         
         if guessed_word not in self.valid_words:
-            return "This is not a valid word. Please guess a valid 5-letter word."
+            await update.message.reply_text("This is not a valid word. Please guess a valid 5-letter word.")
+            return
 
         if guessed_word == self.target_word:
-            return f"Congrats! You guessed the word: {self.target_word}. You win!"
+            await update.message.reply_text(f"Congrats! You guessed the word: {self.target_word}. You win!")
+            context.user_data["current_game"] = None
+            return
         
         feedback = self.get_feedback(guessed_word)
         self.attempts -= 1
         if self.attempts == 0:
-            return f"Game over! The word was: {self.target_word}. Better luck next time!"
+            await update.message.reply_text(f"Game over! The word was: {self.target_word}. Better luck next time!")
+            context.user_data["current_game"] = None
+            return
         
-        return feedback
+        await update.message.reply_text(feedback)
 
     def get_feedback(self, guessed_word):
         feedback = [""] * 5

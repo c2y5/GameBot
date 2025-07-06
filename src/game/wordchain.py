@@ -28,7 +28,7 @@ class WordChainGame:
         return start_message
 
     def find_bot_word(self, last_letter):
-        """Find a valid word starting with the given letter that hasn"t been used yet"""
+        """Find a valid word starting with the given letter that hasn't been used yet"""
         possible_words = [
             word for word in self.words 
             if word.startswith(last_letter) 
@@ -36,23 +36,27 @@ class WordChainGame:
         ]
         return random.choice(possible_words) if possible_words else None
 
-    def check_word(self, player_word):
+    async def check_word(self, player_word, context):
         player_word = player_word.lower().strip()
         
         if not player_word:
             self.game_over = True
+            context.user_data["current_game"] = None
             return "You didn't enter a word! Game over."
             
         if player_word[0] != self.current_word[-1]:
             self.game_over = True
+            context.user_data["current_game"] = None
             return f"❌ Your word \"{player_word}\" doesn't start with \"{self.current_word[-1]}\". Game over!"
 
         if player_word not in self.words:
             self.game_over = True
+            context.user_data["current_game"] = None
             return f"❌ \"{player_word}\" is not in the dictionary. Game over!"
 
         if player_word in self.used_words:
             self.game_over = True
+            context.user_data["current_game"] = None
             return f"❌ \"{player_word}\" was already used. Game over!"
 
         self.used_words.add(player_word)
@@ -61,6 +65,7 @@ class WordChainGame:
         bot_word = self.find_bot_word(player_word[-1])
         if not bot_word:
             self.game_over = True
+            context.user_data["current_game"] = None
             return (
                 f"✅ Your word: {player_word}\n"
                 f"🏆 I can't think of a word starting with \"{player_word[-1]}\"! You win!"
@@ -75,6 +80,7 @@ class WordChainGame:
             f"Your turn! Reply with a word starting with \"{bot_word[-1]}\""
         )
 
-    def handle_guess(self, update, context):
+    async def handle_guess(self, update, context):
         player_word = update.message.text.strip().lower()
-        return self.check_word(player_word)
+        response = await self.check_word(player_word, context)
+        await update.message.reply_text(response)
