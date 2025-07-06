@@ -18,7 +18,8 @@ async def play(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("WordChain", callback_data="play_wordchain")],
         [InlineKeyboardButton("Hangman", callback_data="play_hangman")],
         [InlineKeyboardButton("Unscramble Word", callback_data="play_unscramble")],
-        [InlineKeyboardButton("Memory Game", callback_data="play_memorygame")]
+        [InlineKeyboardButton("Memory Game", callback_data="play_memorygame")],
+        [InlineKeyboardButton("Math Game", callback_data="play_mathgame")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Choose a game to play:", reply_markup=reply_markup)
@@ -43,6 +44,9 @@ async def game_choice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif query.data == "play_memorygame":
         await query.message.reply_text("Type /stop to end your current game.")
         await gamebot.start_game("Memory Game", update, context)
+    elif query.data == "play_mathgame":
+        await query.message.reply_text("Type /stop to end your current game.")
+        await gamebot.start_game("Math Game", update, context)
 
     await query.answer()
 

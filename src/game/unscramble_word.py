@@ -1,7 +1,6 @@
 import random
 from telegram import Update
 from telegram.ext import ContextTypes
-import time
 
 class UnscrambleGame:
     def __init__(self, words):

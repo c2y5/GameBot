@@ -7,6 +7,7 @@ from src.game.wordchain import WordChainGame
 from src.game.hangman import HangmanGame
 from src.game.unscramble_word import UnscrambleGame
 from src.game.memory import MemoryGame
+from src.game.mathgame import MathGame
 
 class GameBot:
     def __init__(self):
@@ -15,7 +16,8 @@ class GameBot:
             "WordChain": None,
             "Hangman": None,
             "Unscramble": None,
-            "Memory": None
+            "Memory": None,
+            "MathGame": None
         }
         self.current_game = None
         self.words = self.load_words("english-words.txt")
@@ -54,6 +56,12 @@ class GameBot:
 
             self.current_game = self.games["Memory"]
             await self.current_game.start_game(update, context)
+        elif game_name == "Math Game":
+            if self.games["MathGame"] is None:
+                self.games["MathGame"] = MathGame()
+
+            self.current_game = self.games["MathGame"]
+            await self.current_game.start_game(update, context)
         else:
             reply_text = f"Sorry, the game {game_name} is not available."
             if update.message is not None:
@@ -84,6 +92,8 @@ class GameBot:
             elif isinstance(game, MemoryGame):
                 await game.handle_click(update, context)
                 return
+            elif isinstance(game, MathGame):
+                response = await game.handle_guess(update, context)
             else:
                 response = "Unknown game type. Please start a new game."
 
