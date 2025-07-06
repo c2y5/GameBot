@@ -82,11 +82,11 @@ class GameBot:
 
         try:
             if isinstance(game, WordleGame):
-                response = game.handle_guess(update, context)
+                response = await game.handle_guess(update, context)
             elif isinstance(game, WordChainGame):
-                response = game.handle_guess(update, context)
+                response = await game.handle_guess(update, context)
             elif isinstance(game, HangmanGame):
-                response = game.handle_guess(update, context)
+                response = await game.handle_guess(update, context)
             elif isinstance(game, UnscrambleGame):
                 response = await game.handle_guess(update, context)
             elif isinstance(game, MemoryGame):

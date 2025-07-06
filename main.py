@@ -68,7 +68,11 @@ async def guess(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("No active game! Start a new game with /play.")
         return
     
-    await gamebot.handle_guess(update, context)
+    try:
+        await gamebot.handle_guess(update, context)
+    except Exception as e:
+        print(f"Error handling guess: {str(e)}")
+        await update.message.reply_text("An error occurred while processing your guess. Please try again.")
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if "current_game" in context.user_data:
